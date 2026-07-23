@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#514178">
   <meta name="description" content="Cariño Spa — catálogo privado, atención discreta y reservas en Santa Cruz de la Sierra.">
-  <meta name="build" content="carino-responsive-mobile-v2">
-  <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260723-2">
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260723-2">
+  <meta name="build" content="carino-responsive-mobile-v3">
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260723-3">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260723-3">
   <title>Cariño Spa — Diseño mejorado</title>
   <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@3.1.1/dist/iconify.min.js" defer></script>
   <style>
@@ -120,7 +120,7 @@
     .hero-slider.is-changing .hero-media img { opacity: .2; transform: scale(1.035); }
     .hero-content { position: relative; z-index: 4; width: min(56%, 650px); min-height: 500px; padding: 56px; display: flex; flex-direction: column; justify-content: center; color: #fff; }
     .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 14px; color: #e4cda9; font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
-    .eyebrow::before { content: ""; width: 28px; height: 1px; background: currentColor; }
+    .eyebrow::before { display: none; }
     .hero-content h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(46px, 6vw, 74px); font-weight: 500; line-height: .96; letter-spacing: -.045em; }
     .hero-subtitle { margin: 16px 0 0; color: rgba(255,255,255,.78); font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     .hero-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
@@ -477,8 +477,8 @@
       opacity: 0;
       transform: scale(1.025);
       transition:
-        opacity .9s cubic-bezier(.22,1,.36,1),
-        transform 1.25s cubic-bezier(.22,1,.36,1);
+        opacity 1.1s cubic-bezier(.4,0,.2,1),
+        transform 1.5s cubic-bezier(.22,1,.36,1);
       will-change: opacity, transform;
     }
     .hero-media img.is-active { opacity: 1; transform: scale(1); }
@@ -866,7 +866,7 @@
       background: linear-gradient(90deg, #fff, #ffd4e6);
       transform: scaleX(0);
       transform-origin: left center;
-      animation: hero-progress 6s linear forwards;
+      animation: hero-progress 6.5s linear forwards;
     }
     .hero-slider.is-paused .hero-dot.active::after { animation-play-state: paused; }
     @keyframes hero-progress { to { transform: scaleX(1); } }
@@ -1074,6 +1074,8 @@
     @media (max-width: 680px) {
       .favorites-panel { top: 78px; right: 11px; width: calc(100vw - 22px); max-height: calc(100dvh - 96px); padding: 15px; border-radius: 20px; }
       .favorites-list { max-height: calc(100dvh - 185px); }
+      .hero-slider,
+      .hero-content { min-height: 648px; }
       .hero-content .eyebrow {
         position: absolute;
         z-index: 7;
@@ -1089,6 +1091,21 @@
         backdrop-filter: blur(10px);
         font-size: 9px;
         letter-spacing: .12em;
+      }
+      .hero-content .eyebrow::before { display: none; }
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+        gap: 8px;
+      }
+      .hero-stats .stat {
+        width: 100%;
+        min-width: 0;
+        justify-content: center;
+        gap: 6px;
+        padding-inline: 6px;
+        white-space: nowrap;
       }
       .hero-actions .btn:last-child { grid-column: auto; }
       .hero-footer {
@@ -1381,10 +1398,11 @@
     const icon = id => `<svg aria-hidden="true"><use href="#i-${id}"/></svg>`;
     const profileIcons = {
       calendar:'heroicons-outline:calendar-days',
-      height:'healthicons:height',
+      height:'fa6-solid:person-dress',
       bust:'picon:bra',
       waist:'icon-park-outline:waistline',
-      hips:'solar:body-shape-minimalistic-bold'
+      hips:'solar:body-shape-minimalistic-bold',
+      availability:'fa6-solid:calendar-check'
     };
     const statIcon = id => `<span class="iconify" data-icon="${profileIcons[id]}" aria-hidden="true"></span>`;
     const statData = p => [
@@ -1394,7 +1412,11 @@
       ['waist',p.waist,'Cintura '+p.waist],
       ['hips',p.hips,'Cadera '+p.hips]
     ];
-    const statsMarkup = p => statData(p).map(([i,v,label]) => `<span class="stat" title="${label}" aria-label="${label}">${statIcon(i)}${v}</span>`).join('');
+    const heroStatData = p => [
+      ...statData(p),
+      ['availability','Consultar','Disponibilidad: consultar']
+    ];
+    const statsMarkup = p => heroStatData(p).map(([i,v,label]) => `<span class="stat" title="${label}" aria-label="${label}">${statIcon(i)}${v}</span>`).join('');
     const miniStatsMarkup = p => statData(p).map(([i,v,label]) => `<span class="mini-stat" title="${label}" aria-label="${label}">${statIcon(i)}<span>${v}</span></span>`).join('');
     const dialogStatsMarkup = p => statData(p).map(([i,v,label]) => `<span class="dialog-stat" title="${label}" aria-label="${label}">${statIcon(i)}<span>${v}</span></span>`).join('');
     const badgeClass = p => p.badge === 'Súper Top' ? 'top' : p.badge === 'Más Solicitada' ? 'requested' : '';
@@ -1479,6 +1501,7 @@
     const hero = document.getElementById('heroSlider');
     const heroMedia = document.getElementById('heroMedia');
     const heroFrames = [...heroMedia.querySelectorAll('.hero-frame')];
+    const HERO_DELAY = 6500;
     let activeHeroFrame = 0;
     let heroTransitionSerial = 0;
     const renderHeroDots = () => { document.getElementById('heroDots').innerHTML = profiles.map((p,i)=>`<button class="hero-dot ${i===heroIndex?'active':''}" type="button" data-slide="${i}" aria-label="Mostrar a ${p.name}" ${i===heroIndex?'aria-current="true"':''}></button>`).join(''); };
@@ -1507,6 +1530,8 @@
           incoming.classList.add('is-active');
           outgoing.classList.remove('is-active');
           activeHeroFrame = incomingIndex;
+          renderHeroDots();
+          if (!hero.classList.contains('is-paused')) restartHero();
         });
       };
       incoming.src = p.images[0];
@@ -1514,23 +1539,30 @@
       else {
         incoming.addEventListener('load', reveal, { once:true });
         incoming.addEventListener('error', () => {
-          if (serial === heroTransitionSerial) syncHeroContent(p);
+          if (serial !== heroTransitionSerial) return;
+          syncHeroContent(p);
+          renderHeroDots();
+          if (!hero.classList.contains('is-paused')) restartHero();
         }, { once:true });
       }
     }
     function showHero(index, userAction=false) {
+      clearTimeout(heroTimer);
       heroIndex = (index + profiles.length) % profiles.length;
       const p = profiles[heroIndex];
       transitionHeroImage(p);
-      renderHeroDots();
-      if (userAction&&!hero.classList.contains('is-paused')) restartHero();
     }
     profiles.slice(1).forEach(p => { const image = new Image(); image.src = p.images[0]; });
-    function restartHero(){ clearInterval(heroTimer); if(!matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer=setInterval(()=>showHero(heroIndex+1),6000); }
+    function restartHero(){
+      clearTimeout(heroTimer);
+      if(!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        heroTimer=setTimeout(()=>showHero(heroIndex+1),HERO_DELAY);
+      }
+    }
     document.getElementById('heroPrev').addEventListener('click',()=>showHero(heroIndex-1,true));
     document.getElementById('heroNext').addEventListener('click',()=>showHero(heroIndex+1,true));
     document.getElementById('heroDots').addEventListener('click',e=>{ const b=e.target.closest('[data-slide]'); if(b) showHero(+b.dataset.slide,true); });
-    hero.addEventListener('mouseenter',()=>{clearInterval(heroTimer);hero.classList.add('is-paused')});
+    hero.addEventListener('mouseenter',()=>{clearTimeout(heroTimer);hero.classList.add('is-paused')});
     hero.addEventListener('mouseleave',()=>{hero.classList.remove('is-paused');renderHeroDots();restartHero()});
     let touchX=0, heroSwiped=false;
     hero.addEventListener('touchstart',e=>{touchX=e.changedTouches[0].clientX;heroSwiped=false},{passive:true});
@@ -1634,7 +1666,7 @@
     }
     function openProfile(id){
       const p=profiles.find(x=>x.id===id); if(!p)return; dialogProfile=p; galleryIndex=0;
-      clearInterval(heroTimer); hero.classList.add('is-paused'); setFavoritesPanel(false);
+      clearTimeout(heroTimer); hero.classList.add('is-paused'); setFavoritesPanel(false);
       dialogGallery.dataset.initial=p.name[0];
       document.getElementById('dialogBadge').textContent=p.badge;
       document.getElementById('dialogName').textContent=p.name;
