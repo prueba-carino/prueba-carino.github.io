@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#514178">
   <meta name="description" content="Cariño Spa — catálogo privado, atención discreta y reservas en Santa Cruz de la Sierra.">
+  <meta name="build" content="carino-responsive-mobile-v2">
+  <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260723-2">
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260723-2">
   <title>Cariño Spa — Diseño mejorado</title>
   <script src="https://cdn.jsdelivr.net/npm/@iconify/iconify@3.1.1/dist/iconify.min.js" defer></script>
   <style>
@@ -468,8 +471,18 @@
     }
     .hero-media:hover::after { background: linear-gradient(0deg, rgba(29,38,76,.22), transparent 34%); }
     .hero-media:focus-visible { outline: 4px solid rgba(121,126,203,.72); outline-offset: -7px; }
-    .hero-media img { transition: opacity .35s ease, transform 1.1s ease; }
-    .hero-media:hover img { transform: scale(1.018); }
+    .hero-media img {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.025);
+      transition:
+        opacity .9s cubic-bezier(.22,1,.36,1),
+        transform 1.25s cubic-bezier(.22,1,.36,1);
+      will-change: opacity, transform;
+    }
+    .hero-media img.is-active { opacity: 1; transform: scale(1); }
+    .hero-media:hover img.is-active { transform: scale(1.014); }
     .hero-content {
       width: 42%;
       min-height: 520px;
@@ -859,7 +872,20 @@
     @keyframes hero-progress { to { transform: scaleX(1); } }
 
     .card-tags { display: none; }
+    .card-media-wrap {
+      position: relative;
+      width: 100%;
+      min-height: 326px;
+      height: 326px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #8d6577, #3d6770);
+    }
     .card-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      min-height: 0;
+      height: 100%;
       padding: 0;
       border: 0;
       color: inherit;
@@ -867,7 +893,29 @@
       text-align: initial;
     }
     .card-media:focus-visible { outline: 4px solid rgba(139,101,189,.7); outline-offset: -5px; }
-    .card-actions { grid-template-columns: 1fr auto auto auto; }
+    .card-favorite {
+      position: absolute;
+      z-index: 6;
+      top: 12px;
+      right: 12px;
+      width: 40px;
+      height: 40px;
+      color: #6f55a1;
+      border-color: rgba(255,255,255,.72);
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 10px 28px rgba(36,30,62,.18);
+      backdrop-filter: blur(12px);
+    }
+    .card-favorite:hover {
+      color: #d84f91;
+      border-color: #fff;
+      background: #fff;
+    }
+    .card-actions { grid-template-columns: minmax(0,1fr) auto auto; }
+    .card-actions .btn {
+      min-width: 0;
+      white-space: nowrap;
+    }
     .favorite-toggle {
       --heart-fill: transparent;
     }
@@ -1026,6 +1074,22 @@
     @media (max-width: 680px) {
       .favorites-panel { top: 78px; right: 11px; width: calc(100vw - 22px); max-height: calc(100dvh - 96px); padding: 15px; border-radius: 20px; }
       .favorites-list { max-height: calc(100dvh - 185px); }
+      .hero-content .eyebrow {
+        position: absolute;
+        z-index: 7;
+        top: 16px;
+        left: 16px;
+        margin: 0;
+        padding: 8px 11px;
+        border: 1px solid rgba(255,255,255,.5);
+        border-radius: 999px;
+        color: #fff;
+        background: linear-gradient(135deg, rgba(117,99,199,.94), rgba(215,79,148,.92));
+        box-shadow: 0 10px 26px rgba(45,35,82,.2);
+        backdrop-filter: blur(10px);
+        font-size: 9px;
+        letter-spacing: .12em;
+      }
       .hero-actions .btn:last-child { grid-column: auto; }
       .hero-footer {
         top: calc(49% - 38px);
@@ -1036,9 +1100,19 @@
       }
       .hero-dots { display: flex; padding: 6px 8px; }
       .hero-dot.active { width: 29px; }
-      .card-actions { grid-template-columns: 1fr auto auto; }
-      .card-actions .round-action:last-child { display: grid; }
-      .card-actions .phone-action { display: none; }
+      .card-media-wrap { width: auto; min-height: 292px; height: auto; }
+      .card-media-wrap .badge { max-width: calc(100% - 62px); }
+      .card-favorite {
+        top: 9px;
+        right: 9px;
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+      }
+      .card-favorite svg { width: 18px; height: 18px; }
+      .card-actions { grid-template-columns: minmax(0,1fr) auto; gap: 8px; }
+      .card-actions .btn { padding-inline: 11px; font-size: 10px; }
+      .card-actions .phone-action { display: none !important; }
       .dialog-actions { grid-template-columns: 1fr 1fr; }
       .dialog-actions .btn-favorite { grid-column: 1 / -1; }
       .gallery-expand-hint { right: 12px; bottom: 40px; padding: 6px 8px; }
@@ -1134,7 +1208,10 @@
   <main>
     <section class="hero" id="inicio" aria-label="Perfiles destacados">
       <div class="shell hero-slider" id="heroSlider" aria-live="polite">
-        <button class="hero-media" id="heroMedia" type="button" data-initial="J" aria-label="Abrir el perfil de Jennifer"><img id="heroImage" src="https://xn--cario-rta.com.bo/storage/media/watermarked/WhatsApp-Image-2026-07-08-at-10.49.16-c8rn_wm.webp?v=1783612870" alt="Foto de Jennifer"></button>
+        <button class="hero-media" id="heroMedia" type="button" data-initial="J" aria-label="Abrir el perfil de Jennifer">
+          <img class="hero-frame is-active" src="https://xn--cario-rta.com.bo/storage/media/watermarked/WhatsApp-Image-2026-07-08-at-10.49.16-c8rn_wm.webp?v=1783612870" alt="" aria-hidden="true">
+          <img class="hero-frame" src="https://xn--cario-rta.com.bo/storage/media/watermarked/WhatsApp-Image-2026-07-08-at-10.49.16-c8rn_wm.webp?v=1783612870" alt="" aria-hidden="true">
+        </button>
         <div class="hero-content">
           <p class="eyebrow" id="heroBadge">Perfil destacado</p>
           <h1 id="heroName">Jennifer</h1>
@@ -1401,29 +1478,54 @@
     let heroTimer;
     const hero = document.getElementById('heroSlider');
     const heroMedia = document.getElementById('heroMedia');
+    const heroFrames = [...heroMedia.querySelectorAll('.hero-frame')];
+    let activeHeroFrame = 0;
+    let heroTransitionSerial = 0;
     const renderHeroDots = () => { document.getElementById('heroDots').innerHTML = profiles.map((p,i)=>`<button class="hero-dot ${i===heroIndex?'active':''}" type="button" data-slide="${i}" aria-label="Mostrar a ${p.name}" ${i===heroIndex?'aria-current="true"':''}></button>`).join(''); };
+    function syncHeroContent(p) {
+      heroMedia.dataset.initial = p.name[0];
+      heroMedia.dataset.id = p.id;
+      heroMedia.setAttribute('aria-label', 'Abrir el perfil de ' + p.name);
+      document.getElementById('heroBadge').textContent = p.badge;
+      document.getElementById('heroName').textContent = p.name;
+      document.getElementById('heroRole').textContent = p.role;
+      document.getElementById('heroStats').innerHTML = statsMarkup(p);
+      document.getElementById('heroWhatsApp').href = p.whatsapp;
+      document.getElementById('heroProfile').dataset.id = p.id;
+      document.getElementById('heroFavorite').dataset.favorite = p.id;
+      paintFavoriteButtons(document.querySelector('.hero-actions'));
+    }
+    function transitionHeroImage(p) {
+      const serial = ++heroTransitionSerial;
+      const incomingIndex = activeHeroFrame === 0 ? 1 : 0;
+      const incoming = heroFrames[incomingIndex];
+      const outgoing = heroFrames[activeHeroFrame];
+      const reveal = () => {
+        if (serial !== heroTransitionSerial) return;
+        syncHeroContent(p);
+        requestAnimationFrame(() => {
+          incoming.classList.add('is-active');
+          outgoing.classList.remove('is-active');
+          activeHeroFrame = incomingIndex;
+        });
+      };
+      incoming.src = p.images[0];
+      if (incoming.complete && incoming.naturalWidth) requestAnimationFrame(reveal);
+      else {
+        incoming.addEventListener('load', reveal, { once:true });
+        incoming.addEventListener('error', () => {
+          if (serial === heroTransitionSerial) syncHeroContent(p);
+        }, { once:true });
+      }
+    }
     function showHero(index, userAction=false) {
       heroIndex = (index + profiles.length) % profiles.length;
       const p = profiles[heroIndex];
-      hero.classList.add('is-changing');
-      setTimeout(() => {
-        const img = document.getElementById('heroImage');
-        img.src = p.images[0]; img.alt = 'Foto de ' + p.name; img.onerror = () => img.style.display='none'; img.style.display='block';
-        heroMedia.dataset.initial = p.name[0];
-        heroMedia.dataset.id = p.id;
-        heroMedia.setAttribute('aria-label', 'Abrir el perfil de ' + p.name);
-        document.getElementById('heroBadge').textContent = p.badge;
-        document.getElementById('heroName').textContent = p.name;
-        document.getElementById('heroRole').textContent = p.role;
-        document.getElementById('heroStats').innerHTML = statsMarkup(p);
-        document.getElementById('heroWhatsApp').href = p.whatsapp;
-        document.getElementById('heroProfile').dataset.id = p.id;
-        document.getElementById('heroFavorite').dataset.favorite = p.id;
-        paintFavoriteButtons(document.querySelector('.hero-actions'));
-        renderHeroDots(); hero.classList.remove('is-changing');
-      }, 150);
+      transitionHeroImage(p);
+      renderHeroDots();
       if (userAction&&!hero.classList.contains('is-paused')) restartHero();
     }
+    profiles.slice(1).forEach(p => { const image = new Image(); image.src = p.images[0]; });
     function restartHero(){ clearInterval(heroTimer); if(!matchMedia('(prefers-reduced-motion: reduce)').matches) heroTimer=setInterval(()=>showHero(heroIndex+1),6000); }
     document.getElementById('heroPrev').addEventListener('click',()=>showHero(heroIndex-1,true));
     document.getElementById('heroNext').addEventListener('click',()=>showHero(heroIndex+1,true));
@@ -1440,11 +1542,14 @@
       const visible = filter==='Todos' ? profiles : profiles.filter(p=>p.badge===filter);
       profilesEl.innerHTML = visible.length ? visible.map(p=>`
         <article class="profile-card" data-badge="${p.badge}">
-          <button class="card-media open-profile" type="button" data-id="${p.id}" data-initial="${p.name[0]}" aria-label="Abrir el perfil de ${p.name}">
-            <img src="${p.images[0]}" alt="Foto de ${p.name}" loading="lazy" onerror="this.style.display='none'">
-            <span class="badge ${badgeClass(p)}">${p.badge}</span>
-            <span class="photo-count">${icon('camera')}${p.images.length}</span>
-          </button>
+          <div class="card-media-wrap">
+            <button class="card-media open-profile" type="button" data-id="${p.id}" data-initial="${p.name[0]}" aria-label="Abrir el perfil de ${p.name}">
+              <img src="${p.images[0]}" alt="Foto de ${p.name}" loading="lazy" onerror="this.style.display='none'">
+              <span class="badge ${badgeClass(p)}">${p.badge}</span>
+              <span class="photo-count">${icon('camera')}${p.images.length}</span>
+            </button>
+            <button class="round-action card-favorite favorite-toggle" type="button" data-favorite="${p.id}" aria-label="Agregar a ${p.name} a favoritas">${icon('heart')}</button>
+          </div>
           <div class="card-body">
             <h3>${p.name}</h3><p class="card-role">${p.role}</p>
             <div class="card-stats">${miniStatsMarkup(p)}</div>
@@ -1452,7 +1557,6 @@
               <button class="btn btn-primary open-profile" type="button" data-id="${p.id}">${icon('user')}Ver perfil</button>
               <a class="round-action wa-action" href="${p.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp de ${p.name}">${icon('whatsapp')}</a>
               <a class="round-action phone-action" href="tel:59177319466" aria-label="Llamar por ${p.name}">${icon('phone')}</a>
-              <button class="round-action favorite-toggle" type="button" data-favorite="${p.id}" aria-label="Agregar a ${p.name} a favoritas">${icon('heart')}</button>
             </div>
           </div>
         </article>`).join('') : '<div class="empty-state">No hay perfiles en esta categoría.</div>';
@@ -1622,7 +1726,7 @@
     const navLinks=[...mainNav.querySelectorAll('a')];
     const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+entry.target.id))}),{rootMargin:'-35% 0px -55%',threshold:0});
     ['inicio','catalogo','contacto'].forEach(id=>observer.observe(document.getElementById(id)));
-    showHero(0); restartHero();
+    syncHeroContent(profiles[0]); renderHeroDots(); restartHero();
     const initialProfile=location.hash.match(/^#perfil-(.+)$/); if(initialProfile)setTimeout(()=>openProfile(initialProfile[1]),50);
   </script>
 </body>
