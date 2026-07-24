@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#514178">
+  <meta name="theme-color" content="#D40068">
   <meta name="description" content="Cariño Spa — catálogo privado, atención discreta y reservas en Santa Cruz de la Sierra.">
-  <meta name="build" content="carino-responsive-mobile-v7-profile-services">
+  <meta name="build" content="carino-responsive-mobile-v9-smart-lightbox">
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260723-3">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico?v=20260723-3">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin>
@@ -1002,17 +1002,32 @@
       display: grid;
       place-items: center;
       padding: 54px 88px 96px;
+      overflow: hidden;
       cursor: grab;
       touch-action: pan-y;
       user-select: none;
     }
     .lightbox-stage.is-dragging { cursor: grabbing; }
     .lightbox-image {
-      width: 100%;
-      height: 100%;
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: min(1180px, 100%);
+      max-height: 100%;
       object-fit: contain;
+      object-position: center;
+      border-radius: clamp(10px, 1.15vw, 18px);
       pointer-events: none;
-      filter: drop-shadow(0 22px 55px rgba(0,0,0,.32));
+      background: rgba(10,9,16,.34);
+      outline: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 22px 65px rgba(0,0,0,.34);
+      transition: opacity .22s ease;
+    }
+    .photo-lightbox[data-orientation="portrait"] .lightbox-image {
+      max-width: min(680px, 100%);
+    }
+    .photo-lightbox[data-orientation="square"] .lightbox-image {
+      max-width: min(880px, 100%);
     }
     .lightbox-close,
     .lightbox-control {
@@ -1134,12 +1149,42 @@
       .dialog-actions { grid-template-columns: 1fr 1fr; }
       .dialog-actions .btn-favorite { grid-column: 1 / -1; }
       .gallery-expand-hint { right: 12px; bottom: 40px; padding: 6px 8px; }
-      .lightbox-stage { padding: 62px 10px 105px; }
-      .lightbox-close { top: 14px; right: 14px; width: 42px; height: 42px; }
-      .lightbox-control { top: auto; bottom: 28px; width: 44px; height: 44px; }
+      .lightbox-stage {
+        padding:
+          calc(62px + env(safe-area-inset-top))
+          14px
+          calc(105px + env(safe-area-inset-bottom));
+      }
+      .lightbox-image {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 12px;
+      }
+      .photo-lightbox[data-orientation="portrait"] .lightbox-image,
+      .photo-lightbox[data-orientation="square"] .lightbox-image {
+        max-width: 100%;
+      }
+      .lightbox-close {
+        top: calc(14px + env(safe-area-inset-top));
+        right: 14px;
+        width: 42px;
+        height: 42px;
+      }
+      .lightbox-control {
+        top: auto;
+        bottom: calc(28px + env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+      }
       .lightbox-prev { left: 14px; }
       .lightbox-next { right: 14px; }
-      .lightbox-meta { bottom: 20px; width: calc(100% - 132px); min-height: 50px; justify-content: center; padding: 9px 12px; }
+      .lightbox-meta {
+        bottom: calc(20px + env(safe-area-inset-bottom));
+        width: calc(100% - 132px);
+        min-height: 50px;
+        justify-content: center;
+        padding: 9px 12px;
+      }
       .lightbox-meta > div:first-child { display: none; }
       .lightbox-dots { justify-content: center; }
       .favorite-toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
@@ -2232,6 +2277,392 @@
       }
     }
 
+    /* Paleta exacta de ui_botones_completo: aplicada sin cambiar la estructura */
+    :root {
+      --brand-fuchsia: #FF007F;
+      --brand-fuchsia-dark: #D40068;
+      --brand-fuchsia-soft: #FFF0F6;
+      --channel-whatsapp: #25D366;
+      --channel-whatsapp-hover: #16A34A;
+      --channel-telegram: #2AABEE;
+      --reference-muted: #64748B;
+      --reference-line: #E2E8F0;
+      --reference-canvas: #F8FAFC;
+      --ink: #0F172A;
+      --muted: var(--reference-muted);
+      --line: var(--reference-line);
+      --paper: #FFFFFF;
+      --canvas: var(--reference-canvas);
+      --wine-900: var(--brand-fuchsia-dark);
+      --wine-800: var(--brand-fuchsia-dark);
+      --wine-700: var(--brand-fuchsia);
+      --wine-600: var(--brand-fuchsia);
+      --petrol: var(--channel-telegram);
+      --petrol-soft: #F0F9FF;
+      --success: var(--channel-whatsapp);
+      --shadow-sm: 0 10px 30px rgba(15, 23, 42, .055);
+      --shadow-lg: 0 28px 80px rgba(15, 23, 42, .14);
+    }
+    body { background: var(--reference-canvas); }
+    :focus-visible {
+      outline-color: rgba(255, 0, 127, .34);
+    }
+
+    /* Cabecera y navegación */
+    .nav-shell {
+      border-color: var(--reference-line);
+      background: rgba(255,255,255,.94);
+      box-shadow: 0 14px 42px rgba(15, 23, 42, .08);
+    }
+    .brand-copy strong { color: var(--brand-fuchsia-dark); }
+    .main-nav a { color: var(--reference-muted); }
+    .main-nav a:hover,
+    .main-nav a.active {
+      color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+    .icon-btn {
+      color: var(--reference-muted);
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+    .icon-btn:hover {
+      color: var(--brand-fuchsia);
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+
+    /* Ver perfil: valores literales de la referencia */
+    .btn-primary {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--brand-fuchsia) 0%, var(--brand-fuchsia-dark) 100%);
+      box-shadow: 0 8px 20px -4px rgba(255, 0, 127, .4);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 12px 25px -4px rgba(255, 0, 127, .6);
+    }
+    .btn-secondary {
+      color: var(--reference-muted);
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+
+    /* Canales: colores oficiales de la muestra */
+    .hero .btn-platform.btn-whatsapp,
+    .dialog-actions .btn-wa {
+      color: var(--channel-whatsapp);
+      border-color: var(--reference-line);
+      background: #fff;
+      box-shadow: none;
+    }
+    .hero .btn-platform.btn-whatsapp svg,
+    .dialog-actions .btn-wa svg {
+      color: var(--channel-whatsapp);
+    }
+    .hero .btn-platform.btn-whatsapp:hover,
+    .dialog-actions .btn-wa:hover {
+      color: var(--channel-whatsapp);
+      border-color: var(--channel-whatsapp);
+      background: #F0FDF4;
+      box-shadow: 0 5px 15px rgba(37, 211, 102, .1);
+    }
+    .hero .btn-platform.btn-telegram,
+    .btn-tg {
+      color: var(--channel-telegram);
+      border-color: var(--reference-line);
+      background: #fff;
+      box-shadow: none;
+    }
+    .hero .btn-platform.btn-telegram svg,
+    .btn-tg svg {
+      color: var(--channel-telegram);
+    }
+    .hero .btn-platform.btn-telegram:hover,
+    .btn-tg:hover {
+      color: var(--channel-telegram);
+      border-color: var(--channel-telegram);
+      background: #F0F9FF;
+      box-shadow: 0 5px 15px rgba(42, 171, 238, .1);
+    }
+    .btn-wa,
+    .mobile-actions .btn-wa,
+    .favorite-item-actions .btn-wa {
+      color: #fff;
+      border-color: var(--channel-whatsapp);
+      background: var(--channel-whatsapp);
+      box-shadow: 0 8px 20px -4px rgba(37, 211, 102, .38);
+    }
+    .btn-wa:hover,
+    .mobile-actions .btn-wa:hover,
+    .favorite-item-actions .btn-wa:hover {
+      color: #fff;
+      border-color: var(--channel-whatsapp-hover);
+      background: var(--channel-whatsapp-hover);
+      box-shadow: 0 12px 25px -4px rgba(37, 211, 102, .48);
+    }
+    .round-action.wa-action {
+      color: var(--channel-whatsapp);
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+    .round-action.wa-action:hover {
+      color: #fff;
+      border-color: var(--channel-whatsapp);
+      background: var(--channel-whatsapp);
+    }
+
+    /* Favoritas */
+    .btn-favorite,
+    .hero .favorite-toggle,
+    .card-favorite,
+    .favorites-trigger {
+      color: var(--reference-muted);
+      border-color: var(--reference-line);
+      background: #fff;
+      box-shadow: none;
+    }
+    .btn-favorite:hover,
+    .hero .favorite-toggle:hover,
+    .card-favorite:hover,
+    .favorites-trigger:hover {
+      color: var(--brand-fuchsia);
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+    .favorite-toggle.is-favorite,
+    .favorites-trigger[aria-expanded="true"] {
+      --heart-fill: currentColor;
+      color: var(--brand-fuchsia);
+      border-color: #FFC2DF;
+      background: var(--brand-fuchsia-soft);
+      box-shadow: 0 8px 22px rgba(255, 0, 127, .13);
+    }
+    .favorite-count {
+      background: linear-gradient(135deg, var(--brand-fuchsia), var(--brand-fuchsia-dark));
+      box-shadow: 0 4px 12px rgba(255, 0, 127, .3);
+    }
+    .favorite-remove {
+      color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+    .favorites-panel {
+      border-color: var(--reference-line);
+      box-shadow: 0 28px 80px rgba(15, 23, 42, .18);
+    }
+    .favorites-kicker { color: var(--brand-fuchsia); }
+
+    /* Perfiles, etiquetas y medidas */
+    .hero-slider {
+      border-color: var(--reference-line);
+      background: #fff;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, .13);
+    }
+    .hero-content { background: #fff; }
+    .eyebrow,
+    .section-kicker,
+    .contact-section .section-kicker {
+      color: var(--brand-fuchsia);
+    }
+    .hero-content h1,
+    .card-body h3,
+    .dialog-content h2 {
+      color: var(--brand-fuchsia);
+    }
+    .hero-subtitle,
+    .card-role,
+    .dialog-role { color: var(--reference-muted); }
+    .hero-stats .stat,
+    .mini-stat,
+    .dialog-stat {
+      color: #334155;
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+    .mini-stat { border: 1px solid var(--reference-line); }
+    .hero-stats .stat svg,
+    .hero-stats .stat .iconify,
+    .mini-stat svg,
+    .mini-stat .iconify,
+    .dialog-stat svg,
+    .dialog-stat .iconify {
+      color: var(--brand-fuchsia);
+    }
+    .hero-stats .stat:last-child {
+      color: var(--brand-fuchsia-dark);
+      border-color: #FFC2DF;
+      background: var(--brand-fuchsia-soft);
+    }
+    .hero-stats .stat:last-child svg { color: var(--brand-fuchsia); }
+    .badge,
+    .badge.top,
+    .badge.requested {
+      border-color: rgba(255,255,255,.62);
+      background: var(--brand-fuchsia);
+    }
+    .badge.top { background: var(--channel-telegram); }
+    .badge.requested { background: var(--brand-fuchsia-dark); }
+    .dialog-badge {
+      color: var(--brand-fuchsia-dark);
+      background: var(--brand-fuchsia-soft);
+    }
+    .filter:hover,
+    .filter.active {
+      color: #fff;
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia);
+      box-shadow: 0 8px 18px rgba(255, 0, 127, .16);
+    }
+    .profile-card:hover {
+      border-color: rgba(255, 0, 127, .26);
+      box-shadow: 0 24px 58px rgba(15, 23, 42, .12);
+    }
+    .card-media:focus-visible { outline-color: rgba(255, 0, 127, .68); }
+
+    /* Progreso y controles */
+    .hero-dot.active::after {
+      background: linear-gradient(90deg, var(--brand-fuchsia), var(--brand-fuchsia-dark));
+    }
+    .hero-control:hover,
+    .gallery-control:hover {
+      color: #fff;
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia);
+    }
+
+    /* Servicios y detalles interiores */
+    .service-option-icon,
+    .dialog-service-icon {
+      color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+    .service-option:nth-child(even) .service-option-icon,
+    .dialog-service-card:nth-child(even) .dialog-service-icon {
+      color: var(--channel-telegram);
+      background: #F0F9FF;
+    }
+    .service-price,
+    .dialog-service-price,
+    .dialog-services-title span {
+      color: var(--brand-fuchsia-dark);
+    }
+    .dialog-service-price { background: var(--brand-fuchsia-soft); }
+    .service-duration svg,
+    .dialog-service-copy svg,
+    .dialog-services-help svg {
+      color: var(--channel-telegram);
+    }
+    .service-option:hover {
+      border-color: #FFC2DF;
+      box-shadow: 0 19px 42px rgba(255, 0, 127, .1);
+    }
+    .dialog-notice {
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+    .dialog-notice-icon {
+      color: var(--channel-telegram);
+      background: #F0F9FF;
+    }
+    .dialog-notice strong { color: var(--brand-fuchsia-dark); }
+
+    /* Comodidades, contacto y pie */
+    .trust-icon {
+      color: var(--channel-telegram);
+      background: #F0F9FF;
+    }
+    .trust-item:nth-child(even) .trust-icon {
+      color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia-soft);
+    }
+    .contact-section { background: var(--reference-canvas); }
+    .contact-panel,
+    .map-panel {
+      border-color: var(--reference-line);
+      box-shadow: 0 22px 58px rgba(15, 23, 42, .09);
+    }
+    .contact-method {
+      border-color: var(--reference-line);
+      background: #fff;
+    }
+    .contact-method:hover {
+      border-color: #FFC2DF;
+      background: var(--brand-fuchsia-soft);
+    }
+    .contact-method > svg:first-child { color: var(--brand-fuchsia); }
+    .contact-method[href*="wa.me"] > svg:first-child { color: var(--channel-whatsapp); }
+    .contact-method[href*="t.me"] > svg:first-child { color: var(--channel-telegram); }
+    .map-caption > svg { color: var(--brand-fuchsia); }
+    .map-caption .btn.btn-primary {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--brand-fuchsia), var(--brand-fuchsia-dark));
+      box-shadow: 0 8px 20px -4px rgba(255, 0, 127, .35);
+    }
+    .map-caption .btn.btn-primary:hover {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--brand-fuchsia), var(--brand-fuchsia-dark));
+      box-shadow: 0 12px 25px -4px rgba(255, 0, 127, .5);
+    }
+    .map-panel .leaflet-control-zoom a { color: var(--channel-telegram); }
+    .map-panel .leaflet-control-zoom a:hover { background: #F0F9FF; }
+    .adult-chip {
+      color: var(--brand-fuchsia-dark);
+      border-color: #FFC2DF;
+      background: var(--brand-fuchsia-soft);
+    }
+    .socials a:hover {
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia);
+    }
+
+    /* El icono de recepción y su CTA se mantienen como fueron aprobados */
+    .service-icon {
+      border-color: #CFE4F1;
+      color: #1A73B4;
+      background: #F1F9FD;
+      box-shadow: inset 0 0 0 5px #fff;
+    }
+    .service-card .service-cta {
+      color: #fff;
+      border-color: var(--channel-whatsapp);
+      background: var(--channel-whatsapp);
+      box-shadow: 0 13px 28px rgba(37, 211, 102, .22);
+    }
+    .service-card .service-cta:hover {
+      border-color: #1FBD5B;
+      background: #1FBD5B;
+      box-shadow: 0 16px 31px rgba(31, 189, 91, .27);
+    }
+
+    /* La edad conserva botones sólidos y adopta la nueva paleta */
+    .age-mark {
+      color: #fff;
+      background: var(--brand-fuchsia);
+      box-shadow: 0 11px 25px rgba(255, 0, 127, .22);
+    }
+    .age-actions .btn-primary {
+      color: #fff;
+      border-color: var(--brand-fuchsia);
+      background: var(--brand-fuchsia);
+      box-shadow: 0 11px 24px rgba(255, 0, 127, .2);
+    }
+    .age-actions .btn-primary:hover {
+      border-color: var(--brand-fuchsia-dark);
+      background: var(--brand-fuchsia-dark);
+      box-shadow: 0 14px 27px rgba(212, 0, 104, .24);
+    }
+    .age-actions .btn-secondary {
+      color: var(--channel-telegram);
+      border-color: #BAE6FD;
+      background: #fff;
+    }
+    .age-actions .btn-secondary:hover {
+      color: #168AC4;
+      border-color: var(--channel-telegram);
+      background: #F0F9FF;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
@@ -2788,6 +3219,40 @@
     let galleryPointerId=null, galleryStartX=0, galleryStartY=0;
     let gallerySuppressClick=false;
     let lightboxPointerId=null, lightboxStartX=0, lightboxStartY=0;
+    let lightboxFitFrame=0;
+
+    function fitLightboxImage(){
+      if(!photoLightbox.open || !lightboxImage.naturalWidth || !lightboxImage.naturalHeight)return;
+      const stageStyle=getComputedStyle(lightboxStage);
+      const horizontalPadding=parseFloat(stageStyle.paddingLeft)+parseFloat(stageStyle.paddingRight);
+      const verticalPadding=parseFloat(stageStyle.paddingTop)+parseFloat(stageStyle.paddingBottom);
+      const availableWidth=Math.max(1,lightboxStage.clientWidth-horizontalPadding);
+      const availableHeight=Math.max(1,lightboxStage.clientHeight-verticalPadding);
+      const naturalWidth=lightboxImage.naturalWidth;
+      const naturalHeight=lightboxImage.naturalHeight;
+      const ratio=naturalWidth/naturalHeight;
+      const orientation=ratio>1.08?'landscape':ratio<.92?'portrait':'square';
+      const isMobile=matchMedia('(max-width: 680px)').matches;
+      const comfort=isMobile ? .96 : .97;
+      const desktopWidthCap=orientation==='portrait' ? 680 : orientation==='square' ? 880 : 1180;
+      const fittedAreaWidth=Math.min(availableWidth*comfort,isMobile ? Infinity : desktopWidthCap);
+      const fittedAreaHeight=availableHeight*comfort;
+      const scale=Math.min(
+        fittedAreaWidth/naturalWidth,
+        fittedAreaHeight/naturalHeight,
+        1
+      );
+      const fittedWidth=Math.max(1,Math.round(naturalWidth*scale));
+      const fittedHeight=Math.max(1,Math.round(naturalHeight*scale));
+      photoLightbox.dataset.orientation=orientation;
+      lightboxImage.style.width=fittedWidth+'px';
+      lightboxImage.style.height=fittedHeight+'px';
+      lightboxImage.dataset.fittedSize=fittedWidth+'x'+fittedHeight;
+    }
+    function queueLightboxFit(){
+      cancelAnimationFrame(lightboxFitFrame);
+      lightboxFitFrame=requestAnimationFrame(fitLightboxImage);
+    }
 
     function renderGallery(){
       const p=dialogProfile;
@@ -2809,6 +3274,9 @@
     }
     function renderLightbox(){
       if(!dialogProfile)return;
+      lightboxImage.style.width='';
+      lightboxImage.style.height='';
+      lightboxImage.removeAttribute('data-fitted-size');
       lightboxImage.src=dialogProfile.images[galleryIndex];
       lightboxImage.alt='Foto ampliada '+(galleryIndex+1)+' de '+dialogProfile.name;
       document.getElementById('lightboxTitle').textContent=dialogProfile.name;
@@ -2816,6 +3284,7 @@
       const onlyOne=dialogProfile.images.length<2;
       document.getElementById('lightboxPrev').hidden=onlyOne;
       document.getElementById('lightboxNext').hidden=onlyOne;
+      if(lightboxImage.complete)queueLightboxFit();
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&lightboxImage.animate){
         lightboxImage.animate([{opacity:.32,transform:'scale(.985)'},{opacity:1,transform:'scale(1)'}],{duration:360,easing:'ease-out'});
       }
@@ -2905,6 +3374,9 @@
     document.getElementById('lightboxPrev').addEventListener('click',()=>showGallery(galleryIndex-1));
     document.getElementById('lightboxNext').addEventListener('click',()=>showGallery(galleryIndex+1));
     document.getElementById('lightboxDots').addEventListener('click',e=>{const dot=e.target.closest('[data-lightbox-gallery]');if(dot)showGallery(+dot.dataset.lightboxGallery)});
+    lightboxImage.addEventListener('load',queueLightboxFit);
+    window.addEventListener('resize',queueLightboxFit,{passive:true});
+    window.visualViewport?.addEventListener('resize',queueLightboxFit,{passive:true});
     photoLightbox.addEventListener('cancel',e=>{e.preventDefault();closePhotoLightbox()});
     photoLightbox.addEventListener('close',()=>{if(dialog.open)restartGalleryAutoplay(2600)});
     photoLightbox.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')showGallery(galleryIndex-1);if(e.key==='ArrowRight')showGallery(galleryIndex+1)});
